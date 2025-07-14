@@ -26,13 +26,11 @@ public class Injector {
             throw new RuntimeException("Class: " + clazz.getName()
                     + "  is not marked with @Component and cannot be injected");
         }
-        Object classInstance = null;
+        Object classInstance = createNewInstance(clazz);
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field field: declaredFields) {
             if (field.isAnnotationPresent(Inject.class)) {
                 Object fieldInstance = getInstance(field.getType());
-                classInstance = createNewInstance(clazz);
-
                 try {
                     field.setAccessible(true);
                     field.set(classInstance, fieldInstance);
@@ -40,9 +38,6 @@ public class Injector {
                     throw new RuntimeException(e);
                 }
             }
-        }
-        if (classInstance == null) {
-            classInstance = createNewInstance(clazz);
         }
         return classInstance;
     }
